@@ -80,7 +80,7 @@ while not sold:
         print("⚠️ Error:", e)
         retries += 1
         if retries >= MAX_RETRIES:
-            log("❌ Too many errors. Exiting bot.")
+            print("❌ Too many errors. Exiting bot.")
             break
         time.sleep(CHECK_INTERVAL)
 

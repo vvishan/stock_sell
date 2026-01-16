@@ -4,6 +4,7 @@ import yfinance as yf
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
+from marketopen import is_market_open
 
 # ========= CONFIG =========
 SYMBOL = "GBX"
@@ -52,10 +53,14 @@ def sell_stock():
     print("✅ SELL ORDER PLACED")
 
 print("🚀 Strategy started... monitoring price")
-
+MAX_RETRIES = 5
+retries = 0
 while not sold:
     try:
-        
+        if not is_market_open():
+            print("⏸️ Market closed. Waiting...")
+            time.sleep(300)  # check again in 5 minutes
+            continue
         price = get_current_price(SYMBOL)
         highest_price = max(highest_price, price)
 
@@ -68,11 +73,15 @@ while not sold:
             sell_stock()
             sold = True
             break
-
+        retries = 0
         time.sleep(CHECK_INTERVAL)
 
     except Exception as e:
         print("⚠️ Error:", e)
+        retries += 1
+        if retries >= MAX_RETRIES:
+            log("❌ Too many errors. Exiting bot.")
+            break
         time.sleep(CHECK_INTERVAL)
 
 print("🛑 Strategy finished. Exiting.")

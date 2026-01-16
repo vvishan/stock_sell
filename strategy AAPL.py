@@ -59,7 +59,7 @@ while not sold:
     try:
         if not is_market_open():
             print("⏸️ Market closed. Waiting...")
-            time.sleep(300)  # check again in 5 minutes
+            time.sleep(20)  # check again in 5 minutes
             continue
         price = get_current_price(SYMBOL)
         highest_price = max(highest_price, price)

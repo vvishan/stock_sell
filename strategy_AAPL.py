@@ -1,5 +1,7 @@
 import os
 import time
+import sys
+sys.stdout.reconfigure(line_buffering=True)
 import yfinance as yf
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
@@ -61,11 +63,12 @@ while not sold:
             print("⏸️ Market closed. Waiting...")
             time.sleep(20)  # check again in 5 minutes
             continue
+
         price = get_current_price(SYMBOL)
         highest_price = max(highest_price, price)
 
         sell, reason = should_sell(price, highest_price)
-
+        print(f"[{time.strftime('%H:%M:%S')}] Checking price...")
         print(f"Price: {price:.2f} | High: {highest_price:.2f} | Status: {reason}")
 
         if sell:

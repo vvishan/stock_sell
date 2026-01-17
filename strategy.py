@@ -1,6 +1,8 @@
 import os
 import time
 import yfinance as yf
+import sys
+sys.stdout.reconfigure(line_buffering=True)
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
@@ -59,7 +61,7 @@ while not sold:
         highest_price = max(highest_price, price)
 
         sell, reason = should_sell(price, highest_price)
-
+        print(f"[{time.strftime('%H:%M:%S')}] Checking price...")
         print(f"Price: {price:.2f} | High: {highest_price:.2f} | Status: {reason}")
 
         if sell:

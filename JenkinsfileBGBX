@@ -1,0 +1,75 @@
+pipeline {
+    agent any
+    environment {
+        ALPACA_API_KEY    = credentials('ALPACA_API_KEY')
+        ALPACA_SECRET_KEY = credentials('ALPACA_SECRET_KEY')
+    }
+
+    stages {
+        stage('Create Env Build') {
+            steps {
+                sh '''
+                    #!/bin/bash
+                    set -e
+
+                    # Step 1: Create virtual environment if it doesn't exist
+                    if [ ! -d "venv" ]; then
+                    echo "Creating Python virtual environment..."
+                    python3 -m venv venv
+                    fi
+                    echo "Env Build complete."
+                '''
+            }
+        }
+        stage('Activating and souce Libraries') {
+            steps {
+                sh '''
+                #!/bin/bash
+                echo "Activating virtual environment..."
+                . venv/bin/activate
+
+                echo "Upgrading pip..."
+                pip install --upgrade pip
+
+                pip install alpaca-py yfinance pandas
+                pip install pandas-market-calendars pytz
+                echo "Activating virtual environment complete..."
+                '''
+            }
+        }
+        stage('Validation of keys') {
+            steps {
+                sh '''
+                #!/bin/bash
+                echo "Validation of keys..."
+                python3 -u safetest.py
+                echo "Validation of keys completed..."
+                '''
+            }
+        }
+        stage('Market Active Test') {
+            steps {
+                sh '''
+                #!/bin/bash
+                echo "Market Active Tests..."
+                . venv/bin/activate
+                pip install pytz
+                python3 -u marketopen.py
+                echo "Market Active Tests complete..."
+                '''
+            }
+        }
+        stage('stock buy strategy') {
+            steps {
+                sh '''
+                #!/bin/bash
+                echo "stock buy strategy checks..."
+                . venv/bin/activate
+                pip install pytz
+                python3 -u strategy_buy_GBX.py
+                echo "stock buy strategy complete..."
+                '''
+            }
+        }
+    }
+}

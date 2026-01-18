@@ -64,6 +64,8 @@ pipeline {
                 sh '''
                 #!/bin/bash
                 echo "stock buy strategy checks..."
+                . venv/bin/activate
+                pip install pytz
                 python3 -u strategy_buy_GBX.py
                 echo "stock buy strategy complete..."
                 '''

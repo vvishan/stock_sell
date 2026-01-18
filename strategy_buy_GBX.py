@@ -10,9 +10,9 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 
 # ========= CONFIG =========
 SYMBOL = "GBX"
-QTY = 5
+QTY = 10
 RSI_THRESHOLD = 35
-CHECK_INTERVAL = 30   # seconds
+CHECK_INTERVAL = 15   # seconds
 TIMEZONE = pytz.timezone("US/Eastern")
 # ==========================
 

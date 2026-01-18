@@ -15,3 +15,4 @@ def is_market_open():
     market_close = schedule.iloc[0]['market_close']
 
     return market_open <= now <= market_close
+#assert(is_market_open()== True)

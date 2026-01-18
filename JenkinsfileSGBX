@@ -59,15 +59,15 @@ pipeline {
                 '''
             }
         }
-        stage('stock buy strategy') {
+        stage('stock sell strategy') {
             steps {
                 sh '''
                 #!/bin/bash
-                echo "stock buy strategy checks..."
+                echo "stock sell strategy checks..."
                 . venv/bin/activate
                 pip install pytz
                 python3 -u strategy_Sell_GBX.py
-                echo "stock buy strategy complete..."
+                echo "stock sell strategy complete..."
                 '''
             }
         }

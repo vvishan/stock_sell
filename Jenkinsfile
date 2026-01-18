@@ -33,6 +33,7 @@ pipeline {
 
                 pip install alpaca-py yfinance pandas
                 pip install pandas-market-calendars
+                echo "Activating virtual environment complete..."
                 '''
             }
         }
@@ -40,9 +41,9 @@ pipeline {
             steps {
                 sh '''
                 #!/bin/bash
-                echo "Running tests..."
+                echo "Validation of keys..."
                 python3 -u safetest.py
-                # Add test commands here
+                echo "Validation of keys completed..."
                 '''
             }
         }
@@ -50,9 +51,9 @@ pipeline {
             steps {
                 sh '''
                 #!/bin/bash
-                echo "Running tests..."
+                echo "Market Active Tests..."
                 python3 -u marketopen.py
-                # Add test commands here
+                echo "Market Active Tests complete..."
                 '''
             }
         }

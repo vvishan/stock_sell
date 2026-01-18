@@ -36,12 +36,22 @@ pipeline {
                 '''
             }
         }
-        stage('Test') {
+        stage('Validation of keys') {
             steps {
                 sh '''
                 #!/bin/bash
                 echo "Running tests..."
                 python3 -u safetest.py
+                # Add test commands here
+                '''
+            }
+        }
+        stage('Market Active Test') {
+            steps {
+                sh '''
+                #!/bin/bash
+                echo "Running tests..."
+                python3 -u marketopen.py
                 # Add test commands here
                 '''
             }

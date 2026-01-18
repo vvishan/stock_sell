@@ -59,5 +59,15 @@ pipeline {
                 '''
             }
         }
+        stage('stock buy strategy') {
+            steps {
+                sh '''
+                #!/bin/bash
+                echo "stock buy strategy checks..."
+                python3 -u strategy_buy_GBX.py
+                echo "stock buy strategy complete..."
+                '''
+            }
+        }
     }
 }

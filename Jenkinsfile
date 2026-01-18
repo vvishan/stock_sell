@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-        ALPACA_API_KEY    = credentials('alpaca-api-key')
-        ALPACA_SECRET_KEY = credentials('alpaca-secret-key')
+        ALPACA_API_KEY    = credentials('ALPACA_API_KEY')
+        ALPACA_SECRET_KEY = credentials('ALPACA_SECRET_KEY')
     }
 
     stages {

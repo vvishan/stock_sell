@@ -52,6 +52,8 @@ pipeline {
                 sh '''
                 #!/bin/bash
                 echo "Market Active Tests..."
+                . venv/bin/activate
+                pip install pytz
                 python3 -u marketopen.py
                 echo "Market Active Tests complete..."
                 '''

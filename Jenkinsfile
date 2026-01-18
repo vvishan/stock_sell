@@ -32,7 +32,7 @@ pipeline {
                 pip install --upgrade pip
 
                 pip install alpaca-py yfinance pandas
-                pip install pandas-market-calendars
+                pip install pandas-market-calendars pytz
                 echo "Activating virtual environment complete..."
                 '''
             }

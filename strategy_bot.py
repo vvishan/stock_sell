@@ -9,7 +9,7 @@ from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 
 # ========= CONFIG =========
-SYMBOLS = ["MARA", "GME", "TSLA"]
+SYMBOLS = ["MARA", "GME", "PLTR"]
 QTY_PER_STOCK = 5
 RSI_THRESHOLD = 35
 TARGET_PCT = 0.01

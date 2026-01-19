@@ -2,6 +2,7 @@ import os
 import time
 import pytz
 import yfinance as yf
+import numpy as np
 from datetime import datetime
 from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
@@ -50,8 +51,11 @@ def calculate_rsi(series, period=14):
     delta = series.diff()
     gain = delta.clip(lower=0)
     loss = -delta.clip(upper=0)
-    rs = gain.rolling(period).mean() / loss.rolling(period).mean()
-    return 100 - (100 / (1 + rs)).iloc[-1]
+    rs = gain.ewm(alpha=1/period, min_periods=period).mean() / \
+         loss.ewm(alpha=1/period, min_periods=period).mean()
+    return 100 - (100 / (1 + rs.iloc[-1]))
+    # rs = gain.rolling(period).mean() / loss.rolling(period).mean()
+    # return 100 - (100 / (1 + rs)).iloc[-1]
 
 def buy(symbol, price):
     order = LimitOrderRequest(
@@ -94,31 +98,55 @@ while True:
 
             print(f"{symbol} | Price={price:.2f} VWAP={vwap:.2f} RSI={rsi:.2f}")
 
-            # ---------- BUY ----------
+
+            # ===== BUY =====
             if not state[symbol]["bought"]:
-                if price <= vwap * 1.002 and rsi <= RSI_THRESHOLD:
+                if price >= vwap * 1.002 and rsi <= RSI_THRESHOLD:
                     entry = round(max(day_low, vwap) + 0.02, 2)
                     buy(symbol, entry)
-                    state[symbol]["bought"] = True
-                    state[symbol]["entry_price"] = entry
+                    state[symbol].update({"bought": True, "entry_price": entry})
 
-            # ---------- SELL ----------
-            if state[symbol]["bought"]:
+            # ===== SELL =====
+            else:
                 entry = state[symbol]["entry_price"]
                 target = entry * (1 + TARGET_PCT)
                 stop = entry * (1 - STOP_LOSS_PCT)
 
-                if price >= target:
-                    sell(symbol, "TARGET HIT")
-                    state[symbol]["bought"] = False
+                reason = (
+                    "TARGET HIT" if price >= target else
+                    "STOP LOSS HIT" if price <= stop else
+                    "TIME EXIT" if should_force_exit() else
+                    None
+                )
 
-                elif price <= stop:
-                    sell(symbol, "STOP LOSS HIT")
-                    state[symbol]["bought"] = False
+                if reason:
+                    sell(symbol, reason)
+                    state[symbol]["bought"] = False            
+            # # ---------- BUY ----------
+            # if not state[symbol]["bought"]:
+            #     if price <= vwap * 1.002 and rsi <= RSI_THRESHOLD:
+            #         entry = round(max(day_low, vwap) + 0.02, 2)
+            #         buy(symbol, entry)
+            #         state[symbol]["bought"] = True
+            #         state[symbol]["entry_price"] = entry
 
-                elif should_force_exit():
-                    sell(symbol, "TIME EXIT")
-                    state[symbol]["bought"] = False
+            # # ---------- SELL ----------
+            # if state[symbol]["bought"]:
+            #     entry = state[symbol]["entry_price"]
+            #     target = entry * (1 + TARGET_PCT)
+            #     stop = entry * (1 - STOP_LOSS_PCT)
+
+            #     if price >= target:
+            #         sell(symbol, "TARGET HIT")
+            #         state[symbol]["bought"] = False
+
+            #     elif price <= stop:
+            #         sell(symbol, "STOP LOSS HIT")
+            #         state[symbol]["bought"] = False
+
+            #     elif should_force_exit():
+            #         sell(symbol, "TIME EXIT")
+            #         state[symbol]["bought"] = False
 
         time.sleep(CHECK_INTERVAL)
 

@@ -98,30 +98,39 @@ while True:
 
             print(f"{symbol} | Price={price:.2f} VWAP={vwap:.2f} RSI={rsi:.2f}")
 
+            if symbol not in state:
+                state[symbol] = {"bought": False, "entry_price": None}
 
             # ===== BUY =====
+            print(f"DEBUG: {symbol} state before trade → {state[symbol]}")
+
             if not state[symbol]["bought"]:
-                if price >= vwap * 1.002 and rsi <= RSI_THRESHOLD:
+                if price > vwap * 1.002 and rsi <= RSI_THRESHOLD:
                     entry = round(max(day_low, vwap) + 0.02, 2)
                     buy(symbol, entry)
                     state[symbol].update({"bought": True, "entry_price": entry})
+                    print(f"BUY {symbol} at {entry}")
 
             # ===== SELL =====
-            else:
+            
+
+            elif state[symbol]["bought"] and state[symbol].get("entry_price") is not None:
                 entry = state[symbol]["entry_price"]
                 target = entry * (1 + TARGET_PCT)
                 stop = entry * (1 - STOP_LOSS_PCT)
+                print(f"DEBUG: {symbol} state before trade → {state[symbol]}")
 
-                reason = (
-                    "TARGET HIT" if price >= target else
-                    "STOP LOSS HIT" if price <= stop else
-                    "TIME EXIT" if should_force_exit() else
-                    None
-                )
+            reason = (
+                "TARGET HIT" if price >= target else
+                "STOP LOSS HIT" if price <= stop else
+                "TIME EXIT" if should_force_exit(symbol) else
+                None
+             )
 
-                if reason:
-                    sell(symbol, reason)
-                    state[symbol]["bought"] = False            
+            if reason:
+                sell(symbol, reason)
+                state[symbol].update({"bought": False, "entry_price": None})
+                print(f"SELL {symbol} - {reason}")
             # # ---------- BUY ----------
             # if not state[symbol]["bought"]:
             #     if price <= vwap * 1.002 and rsi <= RSI_THRESHOLD:

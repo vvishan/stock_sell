@@ -9,8 +9,8 @@ from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 
 # ========= CONFIG =========
-SYMBOLS = ["WALCHANNAG", "SPLPETRO", "WINDMACHIN"]
-QTY_PER_STOCK = 10
+SYMBOLS = ["ONDS", "PLG", "IBRX"]
+QTY_PER_STOCK = 20
 RSI_THRESHOLD = 35
 TARGET_PCT = 0.01
 STOP_LOSS_PCT = 0.005

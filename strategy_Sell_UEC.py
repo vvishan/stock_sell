@@ -12,7 +12,7 @@ from marketopen import is_market_open
 SYMBOL = "UEC"
 QTY = 10
 ENTRY_PRICE = 18.07
-TARGET_PRICE = 20.00
+TARGET_PRICE = 19.10
 TRAILING_STOP_PCT = 3.0    # 5%
 MAX_LOSS_PCT = 5.0         # 10%
 CHECK_INTERVAL = 15         # seconds

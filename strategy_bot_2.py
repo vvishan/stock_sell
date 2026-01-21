@@ -99,7 +99,7 @@ while True:
             print(f"{symbol} | Price={price:.2f} VWAP={vwap:.2f} RSI={rsi:.2f}")
 
             try:
-                position = api.get_position(symbol)
+                position = client.get_position(symbol)
                 side = position.side
             except:
                 side = None  # No open position
@@ -112,7 +112,7 @@ while True:
 
             # ===== SELL =====
             elif state[symbol]["bought"] and side == "long":
-                
+
                 entry = state[symbol]["entry_price"]
                 target = entry * (1 + TARGET_PCT)
                 stop = entry * (1 - STOP_LOSS_PCT)

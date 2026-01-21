@@ -76,7 +76,7 @@ def sell(symbol, reason):
         time_in_force=TimeInForce.DAY
     )
     client.submit_order(order)
-    print(f"✅ SELL {symbol} {price:.2f} ({reason})")
+    print(f"✅ SELL {symbol} ({reason})")
 
 # ---------- MAIN LOOP ----------
 

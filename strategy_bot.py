@@ -9,7 +9,7 @@ from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 
 # ========= CONFIG =========
-SYMBOLS = ["ONDS", "PLG", "IBRX"]
+SYMBOLS = ["PLG", "IBRX"]
 QTY_PER_STOCK = 20
 RSI_THRESHOLD = 35
 TARGET_PCT = 0.01

@@ -9,12 +9,12 @@ from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 
 # ========= CONFIG =========
-SYMBOLS = ["ICON", "IOTR"]
-QTY_PER_STOCK = 5
+SYMBOLS = ["BBAI","PLUG","RZLV"]
+QTY_PER_STOCK = 10
 RSI_THRESHOLD = 35
 TARGET_PCT = 0.01
 STOP_LOSS_PCT = 0.005
-CHECK_INTERVAL = 30
+CHECK_INTERVAL = 15
 TIMEZONE = pytz.timezone("US/Eastern")
 FORCE_EXIT_HOUR = 15
 FORCE_EXIT_MIN = 55

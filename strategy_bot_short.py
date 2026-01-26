@@ -38,6 +38,14 @@ state = {
     } for s in SYMBOLS
 }
 
+# Track daily summary
+summary = {
+    s: {
+        "trades": 0,
+        "total_pnl": 0.0
+    } for s in SYMBOLS
+}
+
 # ---------- HELPERS ----------
 
 def market_time_ok():
@@ -73,6 +81,19 @@ def print_pnl(symbol, entry, exit_price, qty, reason):
         f"Entry={entry:.2f} Exit={exit_price:.2f} "
         f"Qty={qty} P/L={pnl:.2f} USD | {reason}"
     )
+    # Update daily summary
+    summary[symbol]["trades"] += 1
+    summary[symbol]["total_pnl"] += pnl
+
+def print_daily_summary():
+    print("\n📊 DAILY SUMMARY")
+    net_total = 0
+    for symbol in SYMBOLS:
+        trades = summary[symbol]["trades"]
+        total_pnl = summary[symbol]["total_pnl"]
+        net_total += total_pnl
+        print(f"{symbol}: Trades={trades} | Total P/L={total_pnl:.2f} USD")
+    print(f"💰 NET TOTAL P/L = {net_total:.2f} USD\n")
 
 # ---------- ORDERS ----------
 
@@ -100,7 +121,7 @@ def close_short(symbol, exit_price, reason):
         )
     )
 
-    # Print P/L
+    # Print P/L and update summary
     print_pnl(symbol, entry_price, exit_price, QTY, reason)
 
     # Reset state
@@ -159,7 +180,12 @@ while True:
                 if reason:
                     close_short(symbol, exit_price=price, reason=reason)
 
-        time.sleep(CHECK_INTERVAL)
+        # ---------- PRINT DAILY SUMMARY AT MARKET CLOSE ----------
+        if should_force_exit():
+            print_daily_summary()
+            time.sleep(3600)  # sleep 1 hour after market close
+        else:
+            time.sleep(CHECK_INTERVAL)
 
     except Exception as e:
         print("⚠️ Error:", e)

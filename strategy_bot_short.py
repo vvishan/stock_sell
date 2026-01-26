@@ -8,7 +8,7 @@ from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 
 # ========= CONFIG =========
-SYMBOLS = ["ASM"]
+SYMBOLS = ["ASM","NVAX"]
 QTY = 10
 
 RSI_SHORT = 65

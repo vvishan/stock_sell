@@ -158,7 +158,7 @@ while True:
                 if now_ts - state[symbol]["last_exit_time"] < REENTRY_COOLDOWN:
                     continue
 
-                if price <= vwap * 0.998 and rsi >= RSI_SHORT:
+                if price >= vwap * 0.998 and rsi >= RSI_SHORT:
                     open_short(symbol, price)
                     state[symbol]["in_position"] = True
                     state[symbol]["entry_price"] = price

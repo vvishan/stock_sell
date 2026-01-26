@@ -158,11 +158,11 @@ while True:
                 if now_ts - state[symbol]["last_exit_time"] < REENTRY_COOLDOWN:
                     continue
 
-                if price >= vwap * 0.998 and rsi >= RSI_SHORT:
+                if price >= vwap * 1.002 and rsi >= RSI_SHORT:
+                    print(f"ENTRY TRIGGERED {symbol} | Price={price:.2f} VWAP={vwap:.2f} RSI={rsi:.2f}")
                     open_short(symbol, price)
                     state[symbol]["in_position"] = True
                     state[symbol]["entry_price"] = price
-
             # ---------- EXIT ----------
             else:
                 entry = state[symbol]["entry_price"]

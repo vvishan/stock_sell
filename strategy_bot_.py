@@ -30,7 +30,8 @@ client = TradingClient(
 state = {
     symbol: {
         "bought": False,
-        "entry_price": None
+        "entry_price": None,
+        "traded_today": False
     } for symbol in SYMBOLS
 }
 
@@ -48,14 +49,19 @@ def get_intraday_data(symbol):
     return yf.Ticker(symbol).history(period="1d", interval="1m")
 
 def calculate_rsi(series, period=14):
-    delta = series.diff()
-    gain = delta.clip(lower=0)
-    loss = -delta.clip(upper=0)
-    rs = gain.ewm(alpha=1/period, min_periods=period).mean() / \
-         loss.ewm(alpha=1/period, min_periods=period).mean()
-    return 100 - (100 / (1 + rs.iloc[-1]))
-    # rs = gain.rolling(period).mean() / loss.rolling(period).mean()
-    # return 100 - (100 / (1 + rs)).iloc[-1]
+    delta = series.diff().dropna()
+    gain = delta.where(delta > 0, 0.0)
+    loss = -delta.where(delta < 0, 0.0)
+
+    avg_gain = gain.ewm(alpha=1/period, min_periods=period).mean()
+    avg_loss = loss.ewm(alpha=1/period, min_periods=period).mean()
+
+    if avg_loss.iloc[-1] == 0:
+        return 100.0
+
+    rs = avg_gain.iloc[-1] / avg_loss.iloc[-1]
+    return 100 - (100 / (1 + rs))
+
 
 def buy(symbol, price):
     order = LimitOrderRequest(

@@ -11,7 +11,7 @@ from alpaca.trading.enums import OrderSide, TimeInForce
 SYMBOLS = ["ASM", "NVAX"]
 QTY = 10
 
-RSI_SHORT = 60
+RSI_SHORT = 65
 TARGET_PCT = 0.01
 STOP_LOSS_PCT = 0.005
 

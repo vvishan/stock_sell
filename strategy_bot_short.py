@@ -8,7 +8,7 @@ from alpaca.trading.requests import LimitOrderRequest, MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 
 # ========= CONFIG =========
-SYMBOLS = ["ASM","NVAX"]
+SYMBOLS = ["ASM", "NVAX"]
 QTY = 10
 
 RSI_SHORT = 65
@@ -29,6 +29,7 @@ client = TradingClient(
     paper=True
 )
 
+# Track state per symbol
 state = {
     s: {
         "in_position": False,
@@ -64,6 +65,15 @@ def calculate_rsi(series, period=14):
     rs = avg_gain.iloc[-1] / avg_loss.iloc[-1]
     return 100 - (100 / (1 + rs))
 
+def print_pnl(symbol, entry, exit_price, qty, reason):
+    pnl = (entry - exit_price) * qty  # SHORT formula
+    status = "🟢 PROFIT" if pnl > 0 else "🔴 LOSS"
+    print(
+        f"{status} | {symbol} | "
+        f"Entry={entry:.2f} Exit={exit_price:.2f} "
+        f"Qty={qty} P/L={pnl:.2f} USD | {reason}"
+    )
+
 # ---------- ORDERS ----------
 
 def open_short(symbol, price):
@@ -78,16 +88,25 @@ def open_short(symbol, price):
     )
     print(f"🔴 SHORT {symbol} @ {price:.2f}")
 
-def close_short(symbol, reason):
+def close_short(symbol, exit_price, reason):
+    entry_price = state[symbol]["entry_price"]
+
     client.submit_order(
         MarketOrderRequest(
             symbol=symbol,
             qty=QTY,
-            side=OrderSide.BUY,
+            side=OrderSide.BUY,  # BUY to cover SHORT
             time_in_force=TimeInForce.DAY
         )
     )
-    print(f"🟢 COVER {symbol} ({reason})")
+
+    # Print P/L
+    print_pnl(symbol, entry_price, exit_price, QTY, reason)
+
+    # Reset state
+    state[symbol]["in_position"] = False
+    state[symbol]["entry_price"] = None
+    state[symbol]["last_exit_time"] = time.time()
 
 # ---------- MAIN LOOP ----------
 
@@ -129,22 +148,16 @@ while True:
                 target = entry * (1 - TARGET_PCT)
                 stop = entry * (1 + STOP_LOSS_PCT)
 
+                reason = None
                 if price <= target:
-                    close_short(symbol, "TARGET HIT")
-
+                    reason = "TARGET HIT"
                 elif price >= stop:
-                    close_short(symbol, "STOP LOSS HIT")
-
+                    reason = "STOP LOSS HIT"
                 elif should_force_exit():
-                    close_short(symbol, "TIME EXIT")
+                    reason = "TIME EXIT"
 
-                else:
-                    continue
-
-                # Reset state after exit
-                state[symbol]["in_position"] = False
-                state[symbol]["entry_price"] = None
-                state[symbol]["last_exit_time"] = now_ts
+                if reason:
+                    close_short(symbol, exit_price=price, reason=reason)
 
         time.sleep(CHECK_INTERVAL)
 
